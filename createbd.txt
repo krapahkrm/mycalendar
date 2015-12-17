@@ -1,0 +1,82 @@
+CREATE TABLE `user` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`login` VARCHAR(50) NOT NULL COLLATE 'utf8_bin',
+	`email` VARCHAR(100) NOT NULL COLLATE 'utf8_bin',
+	`name` VARCHAR(100) NOT NULL COLLATE 'utf8_bin',
+	`password` VARCHAR(100) NOT NULL COLLATE 'utf8_bin',
+	`hash` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_bin',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `Индекс 2` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+AUTO_INCREMENT=3
+;
+CREATE TABLE `task` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8_bin',
+	`description` VARCHAR(500) NOT NULL DEFAULT '0' COLLATE 'utf8_bin',
+	`id_group` INT(11) NULL DEFAULT '0',
+	`start_time` DATETIME NULL DEFAULT NULL,
+	`end_time` DATETIME NULL DEFAULT NULL,
+	`id_creator` INT(11) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `FK_creator_task` (`id_creator`),
+	INDEX `FK_group_task` (`id_group`),
+	CONSTRAINT `FK_group_task` FOREIGN KEY (`id_group`) REFERENCES `groups` (`id`),
+	CONSTRAINT `FK_creator_task` FOREIGN KEY (`id_creator`) REFERENCES `user` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+AUTO_INCREMENT=11
+;
+CREATE TABLE `notify` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`message` VARCHAR(500) NOT NULL DEFAULT '0' COLLATE 'utf8_bin',
+	`time` DATETIME NULL DEFAULT NULL,
+	`id_task_user` INT(11) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `FK_task_user` (`id_task_user`),
+	CONSTRAINT `FK_task_user` FOREIGN KEY (`id_task_user`) REFERENCES `dl_task_user` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+;
+CREATE TABLE `groups` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`id_creator` INT(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `UNIQUE` (`name`),
+	INDEX `FK_G_U` (`id_creator`),
+	CONSTRAINT `FK_G_U` FOREIGN KEY (`id_creator`) REFERENCES `user` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+AUTO_INCREMENT=8
+;
+CREATE TABLE `dl_task_user` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`id_user` INT(11) NOT NULL DEFAULT '0',
+	`id_task` INT(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	INDEX `FK_task` (`id_task`),
+	INDEX `FK_user` (`id_user`),
+	CONSTRAINT `FK_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
+	CONSTRAINT `FK_task` FOREIGN KEY (`id_task`) REFERENCES `task` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+AUTO_INCREMENT=8
+;
+CREATE TABLE `dl_group_user` (
+	`id_group` INT(11) NOT NULL DEFAULT '0',
+	`id_user` INT(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id_group`, `id_user`),
+	INDEX `FK_group_for_user` (`id_user`),
+	CONSTRAINT `FK_group_for_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
+	CONSTRAINT `FK_group_for_group` FOREIGN KEY (`id_group`) REFERENCES `groups` (`id`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+;
